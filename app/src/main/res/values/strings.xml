@@ -63,7 +63,7 @@
     <string name="selinux_status">SELinux status</string>
     <string name="selinux_status_enforcing">Enforcing</string>
     <string name="device_info_default">Unknown</string>
-    <string name="not_implemented_toast">This item is not implemented in this UI-only clone</string>
+    <string name="not_implemented_toast">This feature has not been implemented at this time</string>
 
     <!-- Spec tile titles (main screen, backed by DeviceProbe.Section) -->
     <string name="spec_wifi_ethernet_title">Wi\u2011Fi &amp; Ethernet</string>
