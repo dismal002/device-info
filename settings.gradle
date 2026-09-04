@@ -1,0 +1,2 @@
+rootProject.name = "DeviceProbeSettings"
+include ':app'

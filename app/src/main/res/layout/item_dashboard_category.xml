@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Mirrors the original app's dashboard_category.xml 1:1 (same
+     dimens, same white "card" look with 4dp elevation and 8dp bottom
+     margin). The only difference is category_content is a plain
+     LinearLayout instead of the platform's internal
+     DashboardContainerView - DashboardAdapter inflates one
+     item_dashboard_tile row into it per tile at bind time.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/category"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/dashboard_category_padding_start"
+    android:paddingEnd="@dimen/dashboard_category_padding_end"
+    android:orientation="vertical"
+    android:background="@color/card_background"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="@dimen/dashboard_category_margin_bottom"
+    android:elevation="@dimen/dashboard_category_elevation">
+
+    <TextView
+        android:id="@+id/category_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dashboard_category_title_height"
+        android:paddingStart="@dimen/dashboard_category_title_margin_start"
+        android:paddingEnd="16dp"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:textColor="@color/settings_accent"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium" />
+
+    <LinearLayout
+        android:id="@+id/category_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+</LinearLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Drives the "About device" screen. AboutDeviceActivity has no
+     hardcoded row list: it parses this file at runtime (see
+     AboutDeviceParser.java). Rows marked app:dynamic="true" have
+     their summary computed live from android.os.Build / system APIs
+     in AboutDeviceActivity#resolveDynamicSummary(key) instead of a
+     fixed string, so the values you see (model, Android version,
+     build number, etc.) always reflect the device the app is running
+     on, not a baked-in sample value.
+-->
+<about-screen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <about-preference
+        android:key="app_version"
+        android:title="@string/app_version_title"
+        app:dynamic="true" />
+
+    <about-preference
+        android:key="use_root"
+        android:title="@string/use_root_title"
+        app:isCheckbox="true" />
+
+    <about-preference
+        android:key="open_source_licenses"
+        android:title="@string/open_source_licenses_title" />
+
+    <about-preference
+        android:key="view_on_github"
+        android:title="@string/view_on_github_title" />
+
+</about-screen>

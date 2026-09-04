@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Header row is a straight copy of item_dashboard_tile's icon+title
+     row (same dimens, so category cards line up whether they hold an
+     old-style clickable tile or a spec tile). Below it, spec_rows is
+     an empty container that SpecDashboardAdapter fills at bind time
+     with one line per DeviceProbe.Section detail entry - this is the
+     "each settings item as an area to display applicable
+     specifications" layout from the concept screenshot.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="56dp"
+        android:paddingTop="12dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/dashboard_tile_image_size"
+            android:layout_height="@dimen/dashboard_tile_image_size"
+            android:scaleType="centerInside"
+            android:tint="@color/settings_accent"
+            android:layout_marginStart="@dimen/dashboard_tile_image_margin_start"
+            android:layout_marginEnd="@dimen/dashboard_tile_image_margin_end" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/settings_title_text"
+            android:fontFamily="sans-serif"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/spec_rows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/dashboard_tile_row_indent"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp" />
+
+    <View
+        android:id="@+id/tile_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/settings_divider" />
+
+</LinearLayout>

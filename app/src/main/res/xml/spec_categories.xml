@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<spec-categories xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- WIRELESS & NETWORKS -->
+    <spec-category android:title="@string/header_category_wireless_networks">
+
+        <spec-tile
+            android:key="wifi_ethernet"
+            android:title="@string/spec_wifi_ethernet_title"
+            android:icon="@drawable/ic_settings_wireless_alpha"
+            app:specSection="WiFi &amp; Ethernet" />
+
+        <spec-tile
+            android:key="bluetooth"
+            android:title="@string/bluetooth_settings_title"
+            android:icon="@drawable/ic_settings_bluetooth_alpha"
+            app:specSection="Bluetooth" />
+
+        <spec-tile
+            android:key="nfc"
+            android:title="@string/spec_nfc_title"
+            android:icon="@drawable/ic_settings_nfc_payment_am_alpha"
+            app:specSection="NFC" />
+
+        <spec-tile
+            android:key="infrared"
+            android:title="@string/spec_infrared_title"
+            android:icon="@drawable/ic_settings_infrared_alpha"
+            app:specSection="Infrared" />
+
+        <spec-tile
+            android:key="fm_radio"
+            android:title="@string/spec_fm_radio_title"
+            android:icon="@drawable/ic_settings_fmradio_alpha"
+            app:specSection="FM radio" />
+
+    </spec-category>
+
+    <!-- DEVICE -->
+    <spec-category android:title="@string/header_category_device">
+
+        <spec-tile
+            android:key="machine"
+            android:title="@string/spec_machine_title"
+            android:icon="@drawable/ic_settings_machine_alpha"
+            app:specSection="Machine" />
+
+        <spec-tile
+            android:key="platform"
+            android:title="@string/spec_platform_title"
+            android:icon="@drawable/ic_settings_platform"
+            app:specSection="Platform" />
+
+        <spec-tile
+            android:key="chip"
+            android:title="@string/spec_chip_title"
+            android:icon="@drawable/ic_settings_cpu"
+            app:specSection="Chip (SoC)" />
+
+        <spec-tile
+            android:key="storage"
+            android:title="@string/storage_usb_settings"
+            android:icon="@drawable/ic_settings_storage_alpha"
+            app:specSection="Storage" />
+
+        <spec-tile
+            android:key="memory"
+            android:title="@string/memory_settings_title"
+            android:icon="@drawable/ic_settings_memory"
+            app:specSection="Memory" />
+
+        <spec-tile
+            android:key="display"
+            android:title="@string/display_settings"
+            android:icon="@drawable/ic_settings_display_alpha"
+            app:specSection="Display" />
+
+        <spec-tile
+            android:key="touch_panel"
+            android:title="@string/spec_touch_panel_title"
+            android:icon="@drawable/ic_settings_touch_alpha"
+            app:specSection="Touch panel" />
+
+        <spec-tile
+            android:key="battery"
+            android:title="@string/power_usage_summary_title"
+            android:icon="@drawable/ic_settings_battery_alpha"
+            app:specSection="Battery" />
+
+        <spec-tile
+            android:key="camera"
+            android:title="@string/spec_camera_title"
+            android:icon="@drawable/ic_settings_camera_alpha"
+            app:specSection="Camera" />
+
+    </spec-category>
+
+    <!-- SYSTEM -->
+    <spec-category android:title="@string/header_category_system">
+
+        <spec-tile
+            android:key="root_check"
+            android:title="@string/spec_root_title"
+            android:icon="@drawable/ic_settings_root_alpha"
+            app:specSection="Root" />
+
+        <spec-tile
+            android:key="welcome_device_check"
+            android:title="@string/spec_welcome_check_title"
+            android:icon="@drawable/ic_settings_security_clonedevice"
+            app:specSection="Welcome Device Check" />
+
+        <spec-tile
+            android:key="about_settings"
+            android:title="@string/about_settings"
+            android:icon="@drawable/ic_settings_about_alpha"
+            app:opensActivity="about" />
+
+    </spec-category>
+
+</spec-categories>

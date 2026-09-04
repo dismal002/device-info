@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Device Info</string>
+
+    <!-- Category headers -->
+    <string name="header_category_wireless_networks">Wireless &amp; networks</string>
+    <string name="header_category_device">Device</string>
+    <string name="header_category_personal">Personal</string>
+    <string name="header_category_system">System</string>
+
+    <!-- Wireless & networks tiles -->
+    <string name="wifi_settings_title">Wi\u2011Fi</string>
+    <string name="bluetooth_settings_title">Bluetooth</string>
+    <string name="sim_settings_title">SIM cards</string>
+    <string name="data_usage_summary_title">Data usage</string>
+    <string name="radio_controls_title">More</string>
+
+    <!-- Device tiles -->
+    <string name="home_settings">Home</string>
+    <string name="display_settings">Display</string>
+    <string name="notification_settings">Sound &amp; notification</string>
+    <string name="applications_settings">Apps</string>
+    <string name="storage_usb_settings">Storage &amp; USB</string>
+    <string name="power_usage_summary_title">Battery</string>
+    <string name="memory_settings_title">Memory</string>
+    <string name="user_settings_title">Users</string>
+    <string name="nfc_payment_settings_title">Tap &amp; pay</string>
+
+    <!-- Personal tiles -->
+    <string name="location_settings_title">Location</string>
+    <string name="security_settings_title">Security</string>
+    <string name="account_settings_title">Accounts</string>
+    <string name="language_settings">Language &amp; input</string>
+    <string name="privacy_settings">Backup &amp; reset</string>
+
+    <!-- System tiles -->
+    <string name="date_and_time_settings_title">Date &amp; time</string>
+    <string name="accessibility_settings">Accessibility</string>
+    <string name="print_settings">Printing</string>
+    <string name="development_settings_title">Developer options</string>
+    <string name="about_settings">About app</string>
+
+    <!-- About device screen -->
+    <string name="app_version_title">App Version</string>
+    <string name="use_root_title">Use root to get more detailed device information</string>
+    <string name="open_source_licenses_title">Open source Licences</string>
+    <string name="view_on_github_title">View on Github</string>
+
+    <string name="system_update_settings_list_item_title">System updates</string>
+    <string name="device_status">Status</string>
+    <string name="device_status_summary">Phone number, signal, etc.</string>
+    <string name="manual">Manual</string>
+    <string name="legal_information">Legal information</string>
+    <string name="regulatory_information">Regulatory information</string>
+    <string name="device_feedback">Send feedback about this device</string>
+    <string name="model_number">Model number</string>
+    <string name="firmware_version">Android version</string>
+    <string name="security_patch">Android security patch level</string>
+    <string name="fcc_equipment_id">Equipment ID</string>
+    <string name="baseband_version">Baseband version</string>
+    <string name="kernel_version">Kernel version</string>
+    <string name="build_number">Build number</string>
+    <string name="selinux_status">SELinux status</string>
+    <string name="selinux_status_enforcing">Enforcing</string>
+    <string name="device_info_default">Unknown</string>
+    <string name="not_implemented_toast">This item is not implemented in this UI-only clone</string>
+
+    <!-- Spec tile titles (main screen, backed by DeviceProbe.Section) -->
+    <string name="spec_wifi_ethernet_title">Wi\u2011Fi &amp; Ethernet</string>
+    <string name="spec_nfc_title">NFC</string>
+    <string name="spec_infrared_title">Infrared</string>
+    <string name="spec_fm_radio_title">FM radio</string>
+    <string name="spec_machine_title">Machine</string>
+    <string name="spec_platform_title">Platform</string>
+    <string name="spec_chip_title">Chip (SoC)</string>
+    <string name="spec_touch_panel_title">Touch panel</string>
+    <string name="spec_camera_title">Camera</string>
+    <string name="spec_root_title">Root</string>
+    <string name="spec_welcome_check_title">Welcome Device Check</string>
+
+    <!-- Spec tile row placeholders/status -->
+    <string name="spec_loading">Reading\u2026</string>
+    <string name="spec_no_values">No values available on this device.</string>
+    <string name="spec_load_failed">Could not read device information.</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="unknown">unknown</string>
+    <string name="probe_result">Result</string>
+    <string name="probe_build_type">build type</string>
+    <string name="probe_root_indicator_build_type">Root indicator: build type</string>
+    <string name="probe_build_tags">build tags</string>
+    <string name="probe_root_indicator_build_tags">Root indicator: build tags</string>
+    <string name="probe_manufacturer">manufacturer</string>
+    <string name="probe_brand">brand</string>
+    <string name="probe_product">product</string>
+    <string name="probe_model">model</string>
+    <string name="probe_marketing_name">marketing name</string>
+    <string name="probe_device_name">device name</string>
+    <string name="probe_android_version">android version</string>
+    <string name="probe_sdk_level">sdk level</string>
+    <string name="probe_build_id">build id</string>
+    <string name="probe_build_display">build display</string>
+    <string name="probe_fingerprint">fingerprint</string>
+    <string name="probe_custom_rom">custom rom</string>
+    <string name="probe_hardware_id">hardware id</string>
+    <string name="probe_cpu_reported_by_kernel">cpu reported by kernel</string>
+    <string name="probe_cpu_architecture">cpu architecture</string>
+    <string name="probe_abi">abi</string>
+    <string name="probe_cores">cores</string>
+    <string name="probe_vendor">vendor</string>
+    <string name="probe_family">family</string>
+    <string name="probe_capacity">capacity</string>
+    <string name="probe_emmc">emmc</string>
+    <string name="probe_ufs">ufs</string>
+    <string name="probe_ufs_revision">ufs revision</string>
+    <string name="probe_storage_model">storage model</string>
+    <string name="probe_boot_device">boot device</string>
+    <string name="probe_data_filesystem">data filesystem</string>
+    <string name="probe_ufs_health">ufs health</string>
+    <string name="probe_hwinfo_ufs">hwinfo: ufs</string>
+    <string name="probe_hwinfo_emmc">hwinfo: emmc</string>
+    <string name="probe_resolution">resolution</string>
+    <string name="probe_density">density</string>
+    <string name="probe_physical_size">physical size</string>
+    <string name="probe_refresh_rate">refresh rate</string>
+    <string name="probe_hdr">hdr</string>
+    <string name="probe_panel">panel</string>
+    <string name="probe_touch_model">touch model</string>
+    <string name="probe_multi_touch">multi-touch</string>
+    <string name="probe_driver_node">driver node</string>
+    <string name="probe_goodix_gt9xx">goodix gt9xx</string>
+    <string name="probe_goodix_gt1x">goodix gt1x</string>
+    <string name="probe_aeon_tpd">aeon tpd</string>
+    <string name="probe_level">level</string>
+    <string name="probe_status">status</string>
+    <string name="probe_plugged">plugged</string>
+    <string name="probe_health">health</string>
+    <string name="probe_technology">technology</string>
+    <string name="probe_temperature">temperature</string>
+    <string name="probe_voltage">voltage</string>
+    <string name="probe_design_capacity">design capacity</string>
+    <string name="probe_current_now">current now</string>
+    <string name="probe_supported">supported</string>
+    <string name="probe_enabled">enabled</string>
+    <string name="probe_chip_type">chip type</string>
+    <string name="probe_firmware_present">firmware present</string>
+    <string name="probe_name">name</string>
+    <string name="probe_low_energy">low energy</string>
+    <string name="probe_chipset_bt_version">chipset bt version</string>
+    <string name="probe_combo_chip_vendor">combo chip vendor</string>
+    <string name="probe_wifi_supported">wifi supported</string>
+    <string name="probe_wifi_direct">wifi direct</string>
+    <string name="probe_6_ghz_band">6 GHz band</string>
+    <string name="probe_chipset_wifi_standard">chipset wifi standard</string>
+    <string name="probe_ethernet_supported">ethernet supported</string>
+    <string name="probe_ethernet_interfaces">ethernet interfaces</string>
+    <string name="probe_carrier_frequency_ranges_hz">carrier frequency ranges (Hz)</string>
+    <string name="probe_flash">flash</string>
+    <string name="probe_camera_count">camera count</string>
+    <string name="probe_welcome_device_check">Welcome Device Check</string>
+    <string name="probe_root">Root</string>
+    <string name="probe_machine">Machine</string>
+    <string name="probe_platform">Platform</string>
+    <string name="probe_chip_soc">Chip (SoC)</string>
+    <string name="probe_storage">Storage</string>
+    <string name="probe_memory">Memory</string>
+    <string name="probe_display">Display</string>
+    <string name="probe_touch_panel">Touch panel</string>
+    <string name="probe_battery">Battery</string>
+    <string name="probe_nfc">NFC</string>
+    <string name="probe_bluetooth">Bluetooth</string>
+    <string name="probe_wifi__ethernet">WiFi &amp; Ethernet</string>
+    <string name="probe_infrared">Infrared</string>
+    <string name="probe_fm_radio">FM radio</string>
+    <string name="probe_camera">Camera</string>
+    <string name="probe_hardware">Hardware</string>
+    <string name="probe_processor">Processor</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Copied 1:1 from the original Settings app's dimens.xml so the
+         dashboard cards render at the exact same size/spacing. -->
+    <dimen name="dashboard_category_padding_start">0dp</dimen>
+    <dimen name="dashboard_category_padding_end">0dp</dimen>
+    <dimen name="dashboard_category_elevation">4dp</dimen>
+    <dimen name="dashboard_category_title_height">48dp</dimen>
+    <dimen name="dashboard_category_title_margin_start">16dp</dimen>
+    <dimen name="dashboard_tile_minimum_height">72dp</dimen>
+    <dimen name="dashboard_tile_image_size">24dp</dimen>
+    <dimen name="dashboard_tile_image_margin_start">16dp</dimen>
+    <dimen name="dashboard_tile_image_margin_end">32dp</dimen>
+    <dimen name="dashboard_category_margin_bottom">8dp</dimen>
+
+    <!-- 16dp start margin + 24dp icon + 16dp end margin: lines spec rows
+         up under the tile title, to the right of where the icon sits. -->
+    <dimen name="dashboard_tile_row_indent">56dp</dimen>
+</resources>

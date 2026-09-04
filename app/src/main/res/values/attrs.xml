@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom attributes for the config XML files that drive the UI.
+         android:title / android:icon / android:summary / android:key
+         reuse the real framework attribute definitions so TypedArray
+         resolves @string / @drawable references for us; opensActivity
+         and dynamic are ours since no such framework attrs exist. -->
+
+    <attr name="opensActivity" format="string" />
+    <attr name="dynamic" format="boolean" />
+    <!-- Names a DeviceProbe.Section.title this tile should render inline
+         (e.g. "Machine", "Platform", "WiFi & Ethernet"). Omitted for the
+         one legacy tile that still just opens a screen (About phone). -->
+    <attr name="specSection" format="string" />
+
+    <attr name="isCheckbox" format="boolean" />
+
+    <declare-styleable name="AboutPreference">
+        <attr name="android:key" />
+        <attr name="android:title" />
+        <attr name="android:summary" />
+        <attr name="dynamic" />
+        <attr name="isCheckbox" />
+    </declare-styleable>
+
+    <declare-styleable name="SpecCategory">
+        <attr name="android:title" />
+    </declare-styleable>
+
+    <declare-styleable name="SpecTile">
+        <attr name="android:key" />
+        <attr name="android:title" />
+        <attr name="android:icon" />
+        <attr name="specSection" />
+        <attr name="opensActivity" />
+    </declare-styleable>
+</resources>
