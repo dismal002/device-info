@@ -2,13 +2,22 @@ package com.dismal.deviceinfo.model;
 
 import com.dismal.deviceinfo.probe.DeviceProbe;
 
-
+/**
+ * A single "settings item" row on the main screen. Unlike the original
+ * {@code DashboardTile} (which only navigated to another screen), most
+ * spec tiles render their data inline: {@link #specSection} names the
+ * {@link DeviceProbe.Section#title} this tile should display once the
+ * probe finishes running (wired up in res/xml/spec_categories.xml via
+ * app:specSection). {@link #section} starts null and is filled in by
+ * SpecDashboardAdapter#setSections once DeviceProbe.run() returns.
+ */
 public class SpecTile {
 
     private final String key;
     private final String title;
     private final int iconRes;
     private final String specSection;
+    /** Non-null only for the one legacy tile that still opens a real screen (About phone). */
     private final String opensActivity;
 
     private DeviceProbe.Section section;

@@ -12,6 +12,9 @@ import android.graphics.Point;
 import android.hardware.ConsumerIrManager;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.params.StreamConfigurationMap;
+import android.hardware.display.DisplayManager;
+import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -31,6 +34,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Java rewrite of the relevant parts of the original {@code f.java} probe.
+ *
+ * Covers: Machine, Platform, Chip (SoC), Storage, Memory, Display (size/resolution
+ * + touch model), Touch panel, Battery, NFC, Bluetooth, WiFi &amp; Ethernet,
+ * Infrared, FM and Camera. Everything else from the original
+ * (haptic, fingerprint, sound, individual motion/environment sensors,
+ * driver dump) is intentionally left out - add a new Section-returning
+ * function the same way if you want one of those back.
+ *
+ * Same compatibility approach as before: every read is a plain file /
+ * getprop / framework-API read with a root-shell fallback where relevant.
+ * Nothing here is gated behind a runtime permission it doesn't already
+ * declare, so a stock non-rooted phone on any API level from 19 up just
+ * shows fewer fields rather than crashing.
+ */
 public final class DeviceProbe {
 
     private DeviceProbe() {
@@ -92,7 +111,7 @@ public final class DeviceProbe {
         return m;
     }
 
-
+    /** Filters {@link #DRIVER_VENDOR_MAP} down to a single component key, mirroring the Kotlin filterKeys call sites. */
     private static Map<String, String> driverVendorMapFor(String component) {
         LinkedHashMap<String, String> m = new LinkedHashMap<>();
         String v = DRIVER_VENDOR_MAP.get(component);
@@ -100,7 +119,7 @@ public final class DeviceProbe {
         return m;
     }
 
-
+    // ---- the same wireless combo-chip reference table as the original (id -> wifi/bt/gnss gen) ----
     private static final List<String[]> WIRELESS_DATABASE = Arrays.asList(
             new String[]{"hi1101", "huawei", "WiFi4", "BT4.1", "GPS/AGPS/GLONASS/BEIDOU"},
             new String[]{"hi1102a", "huawei", "WiFi5", "BT5.1", "GPS/AGPS/GLONASS/BEIDOU/GALILEO/QZSS"},
@@ -123,6 +142,11 @@ public final class DeviceProbe {
         return null;
     }
 
+    // ---- the same SoC reference table as the original (id match -> spec row), ----
+    // extended with Rockchip and Google Tensor entries the original never had.
+    // columns: 0 match key(s), 1 name, 2 process, 3 modem, 4 cpu, 5 gpu,
+    // 6 npu/dsp, 7 ram, 8 storage, 9 wifi, 10 bluetooth, 11 gnss,
+    // 12 fast-charge, 13 usb, 14 camera isp
     private static final List<String[]> SOC_DATABASE = Arrays.asList(
             new String[]{"kirin659;hi6250", "kirin659", "16nm", "LTE Cat6", "4xA53@2.4G, 4xA53@1.7G", "Mali-T830 MP2 41GFlops", null, "LPDDR3", "eMMC5.1", null, null, null, null, null, null},
             new String[]{"kirin950;hi3650", "kirin950", "16nm", "LTE Cat6", "4xA72@2.4G, 4xA53@1.8G", "Mali-T880 MP4, 122GFlops", null, "LPDDR4", "eMMC5.1/UFS<2.0", null, null, null, null, null, null},
@@ -299,6 +323,7 @@ public final class DeviceProbe {
         sections.add(nfc(context, shell, i2cNames));
         sections.add(bluetooth(context, props, cpuHardware));
         sections.add(wifiAndEthernet(context, props, cpuHardware));
+        sections.add(lte(context, props, cpuHardware));
         sections.add(infrared(context));
         sections.add(fm(context, shell, props, i2cNames));
         sections.add(camera(context));
@@ -318,7 +343,7 @@ public final class DeviceProbe {
         for (String packageName : WELCOME_PACKAGES) {
             try {
                 pm.getPackageInfo(packageName, 0);
-                d.put("App found: " + packageName, "Installed");
+                d.put(context.getString(R.string.probe_app_found_label, packageName), context.getString(R.string.value_installed));
                 found = true;
             } catch (PackageManager.NameNotFoundException ignored) {
                 // Not installed (or not visible on this Android version).
@@ -328,7 +353,7 @@ public final class DeviceProbe {
         for (String property : WELCOME_PROPERTIES) {
             String value = props.get(property);
             if (value != null) {
-                d.put("System property: " + property, value);
+                d.put(context.getString(R.string.probe_system_property_label, property), value);
                 found = true;
             }
         }
@@ -337,7 +362,7 @@ public final class DeviceProbe {
             try {
                 String value = Settings.System.getString(context.getContentResolver(), setting);
                 if (value != null) {
-                    d.put("System setting: " + setting, value);
+                    d.put(context.getString(R.string.probe_system_setting_label, setting), value);
                     found = true;
                 }
             } catch (Exception ignored) {
@@ -345,7 +370,7 @@ public final class DeviceProbe {
             }
         }
 
-        String result = found ? "Likely a Welcome Device" : "Likely not a Welcome Device";
+        String result = found ? context.getString(R.string.probe_welcome_check_result_yes) : context.getString(R.string.probe_welcome_check_result_no);
         d.put(context.getString(R.string.probe_result), result);
         return new Section(context.getString(R.string.probe_welcome_device_check), result, d);
     }
@@ -364,42 +389,42 @@ public final class DeviceProbe {
         };
         for (String path : suPaths) {
             if (new File(path).isFile()) {
-                d.put("su binary: " + path, "Found");
+                d.put(context.getString(R.string.probe_su_binary_label, path), context.getString(R.string.value_found));
                 rootIndicatorFound = true;
             }
         }
 
         String roSecure = props.get("ro.secure");
-        d.put("ro.secure", roSecure != null ? roSecure : "Not set");
+        d.put("ro.secure", roSecure != null ? roSecure : context.getString(R.string.value_not_set));
         if ("0".equals(roSecure)) {
-            d.put("Root indicator: ro.secure", "0 (non-secure build)");
+            d.put(context.getString(R.string.probe_root_indicator_ro_secure), context.getString(R.string.probe_root_indicator_ro_secure_value));
             rootIndicatorFound = true;
         }
 
         String roDebuggable = props.get("ro.debuggable");
-        d.put("ro.debuggable", roDebuggable != null ? roDebuggable : "Not set");
+        d.put("ro.debuggable", roDebuggable != null ? roDebuggable : context.getString(R.string.value_not_set));
         if ("1".equals(roDebuggable)) {
-            d.put("Root indicator: ro.debuggable", "1 (debuggable build)");
+            d.put(context.getString(R.string.probe_root_indicator_ro_debuggable), context.getString(R.string.probe_root_indicator_ro_debuggable_value));
             rootIndicatorFound = true;
         }
 
         String buildType = props.get("ro.build.type");
-        d.put(context.getString(R.string.probe_build_type), buildType != null ? buildType : "Not set");
+        d.put(context.getString(R.string.probe_build_type), buildType != null ? buildType : context.getString(R.string.value_not_set));
         if ("eng".equalsIgnoreCase(buildType)) {
-            d.put(context.getString(R.string.probe_root_indicator_build_type), "Engineering build");
+            d.put(context.getString(R.string.probe_root_indicator_build_type), context.getString(R.string.probe_engineering_build));
             rootIndicatorFound = true;
         }
 
         String buildTags = props.get("ro.build.tags");
         if (buildTags != null) d.put(context.getString(R.string.probe_build_tags), buildTags);
         if (buildTags != null && buildTags.contains("test-keys")) {
-            d.put(context.getString(R.string.probe_root_indicator_build_tags), "test-keys");
+            d.put(context.getString(R.string.probe_root_indicator_build_tags), context.getString(R.string.probe_test_keys));
             rootIndicatorFound = true;
         }
 
         String result = rootIndicatorFound
-                ? "Root indicators detected"
-                : "No root indicators detected";
+                ? context.getString(R.string.probe_root_indicators_detected)
+                : context.getString(R.string.probe_no_root_indicators_detected);
         d.put(context.getString(R.string.probe_result), result);
         return new Section(context.getString(R.string.probe_root), result, d);
     }
@@ -541,7 +566,7 @@ public final class DeviceProbe {
                 props.get("ro.board.platform"),
                 props.get("ro.hardware")
         );
-        if (hint == null) hint = "unknown";
+        if (hint == null) hint = context.getString(R.string.unknown);
         d.put(context.getString(R.string.probe_hardware_id), hint);
 
         String processor = firstFieldValue(cpuInfo, context.getString(R.string.probe_processor));
@@ -562,19 +587,19 @@ public final class DeviceProbe {
         String subtitle;
         if (row != null) {
             subtitle = row[1] != null ? row[1] : hint;
-            putIfPresent(d, "process node", row[2]);
-            putIfPresent(d, "modem", row[3]);
-            putIfPresent(d, "cpu", row[4]);
-            putIfPresent(d, "gpu", row[5]);
-            putIfPresent(d, "npu / dsp", row[6]);
-            putIfPresent(d, "ram type", row[7]);
-            putIfPresent(d, "storage interface", row[8]);
-            putIfPresent(d, "wifi", row[9]);
-            putIfPresent(d, "bluetooth", row[10]);
-            putIfPresent(d, "gnss", row[11]);
-            putIfPresent(d, "fast charging", row[12]);
-            putIfPresent(d, "usb", row[13]);
-            putIfPresent(d, "camera isp", row[14]);
+            putIfPresent(d, context.getString(R.string.probe_process_node), row[2]);
+            putIfPresent(d, context.getString(R.string.probe_modem), row[3]);
+            putIfPresent(d, context.getString(R.string.probe_cpu), row[4]);
+            putIfPresent(d, context.getString(R.string.probe_gpu), row[5]);
+            putIfPresent(d, context.getString(R.string.probe_npu_dsp), row[6]);
+            putIfPresent(d, context.getString(R.string.probe_ram_type), row[7]);
+            putIfPresent(d, context.getString(R.string.probe_storage_interface), row[8]);
+            putIfPresent(d, context.getString(R.string.probe_wifi), row[9]);
+            putIfPresent(d, context.getString(R.string.probe_bluetooth_lower), row[10]);
+            putIfPresent(d, context.getString(R.string.probe_gnss), row[11]);
+            putIfPresent(d, context.getString(R.string.probe_fast_charging), row[12]);
+            putIfPresent(d, context.getString(R.string.probe_usb), row[13]);
+            putIfPresent(d, context.getString(R.string.probe_camera_isp), row[14]);
         } else {
             String[] guess = guessVendor(hint);
             if (guess != null) {
@@ -620,17 +645,21 @@ public final class DeviceProbe {
             Map<String, String> hwinfo
     ) {
         LinkedHashMap<String, String> d = new LinkedHashMap<>();
+        String capacityForSubtitle = null;
 
         try {
             StatFs statFs = new StatFs(Environment.getDataDirectory().getAbsolutePath());
             long totalMb = (statFs.getBlockCountLong() * statFs.getBlockSizeLong()) / 1024 / 1024;
             long sizeGb = 1L;
             while (sizeGb < totalMb / 1024 && sizeGb < 1_048_576L) sizeGb *= 2;
-            d.put(context.getString(R.string.probe_capacity), sizeGb + "G");
+            capacityForSubtitle = sizeGb + "G";
+            d.put(context.getString(R.string.probe_capacity), capacityForSubtitle);
         } catch (Exception ignored) {
         }
 
         String emmcModel = null;
+        String ufsModelForSubtitle = null;
+        String storageModelForSubtitle = null;
         for (String base : new String[]{
                 "/sys/class/mmc_host/mmc0/mmc0:0001/",
                 "/sys/class/mmc_host/emmc/emmc:0001/"
@@ -664,7 +693,10 @@ public final class DeviceProbe {
             String vendor = StrUtil.findGroup(ufsLine, "Vendor:\\s*(\\S+)");
             String modelField = StrUtil.findGroup(ufsLine, "Model:\\s*(\\S+)");
             String ufsModel = StrUtil.joinSkipBlanks(" ", vendor, modelField);
-            if (ufsModel != null) d.put(context.getString(R.string.probe_ufs), ufsModel);
+            if (ufsModel != null) {
+                d.put(context.getString(R.string.probe_ufs), ufsModel);
+                ufsModelForSubtitle = ufsModel;
+            }
         }
 
         // Modern UFS usually presents its logical unit as sda. These files are
@@ -674,12 +706,17 @@ public final class DeviceProbe {
         String sdaRevision = shell.readFile("/sys/block/sda/device/rev");
         if ((sdaVendor != null && !sdaVendor.trim().isEmpty()) || (sdaModel != null && !sdaModel.trim().isEmpty())) {
             String ufsModel = StrUtil.joinSkipBlanks(" ", sdaVendor, sdaModel);
-            if (ufsModel != null) d.putIfAbsent(context.getString(R.string.probe_ufs), ufsModel);
+            if (ufsModel != null && d.putIfAbsent(context.getString(R.string.probe_ufs), ufsModel) == null && ufsModelForSubtitle == null) {
+                ufsModelForSubtitle = ufsModel;
+            }
             if (sdaRevision != null && !sdaRevision.trim().isEmpty()) d.put(context.getString(R.string.probe_ufs_revision), sdaRevision);
         }
 
-        if (!d.containsKey("ufs") && !d.containsKey("emmc")) {
-            if (sdaModel != null) d.put(context.getString(R.string.probe_storage_model), sdaModel);
+        if (ufsModelForSubtitle == null && emmcModel == null) {
+            if (sdaModel != null) {
+                d.put(context.getString(R.string.probe_storage_model), sdaModel);
+                storageModelForSubtitle = sdaModel;
+            }
         }
 
         String bootDevice = StrUtil.firstNonBlank(props.get("ro.boot.bootdevice"), props.get("ro.boot.boot_devices"));
@@ -703,13 +740,13 @@ public final class DeviceProbe {
             String flat = ufsHealth.replace('\n', ',');
             if (!flat.trim().isEmpty()) d.put(context.getString(R.string.probe_ufs_health), flat);
         }
-        putIfPresent(d, "ufs hint (vendor)", props.get("ro.meizu.hardware.ufs"));
-        putIfPresent(d, "ufs hint (bootloader)", props.get("ro.boot.hardware.ufs"));
-        putIfPresent(d, "storage manufacturer hint", props.get("ro.meizu.storage.manufacturer"));
+        putIfPresent(d, context.getString(R.string.probe_ufs_hint_vendor), props.get("ro.meizu.hardware.ufs"));
+        putIfPresent(d, context.getString(R.string.probe_ufs_hint_bootloader), props.get("ro.boot.hardware.ufs"));
+        putIfPresent(d, context.getString(R.string.probe_storage_manufacturer_hint), props.get("ro.meizu.storage.manufacturer"));
         if (hwinfo.get("ufs") != null) d.put(context.getString(R.string.probe_hwinfo_ufs), hwinfo.get("ufs"));
         if (hwinfo.get("emmc") != null) d.put(context.getString(R.string.probe_hwinfo_emmc), hwinfo.get("emmc"));
 
-        String subtitle = StrUtil.firstNonBlank(d.get("ufs"), d.get("emmc"), d.get("storage model"), d.get("capacity"));
+        String subtitle = StrUtil.firstNonBlank(ufsModelForSubtitle, emmcModel, storageModelForSubtitle, capacityForSubtitle);
         return new Section(context.getString(R.string.probe_storage), subtitle, d);
     }
 
@@ -758,10 +795,10 @@ public final class DeviceProbe {
                 "/sys/kernel/debug/ddr_info");
         String hwDdr = StrUtil.firstNonBlank(hwinfo.get("ddr"), hwinfo.get("ddr_vendor"));
 
-        putIfPresent(d, "ddr hint", ddr);
-        putIfPresent(d, "dram info", dramInfo);
-        putIfPresent(d, "ddr info", ddrInfo);
-        putIfPresent(d, "hardware info", hwDdr);
+        putIfPresent(d, context.getString(R.string.probe_ddr_hint), ddr);
+        putIfPresent(d, context.getString(R.string.probe_dram_info), dramInfo);
+        putIfPresent(d, context.getString(R.string.probe_ddr_info), ddrInfo);
+        putIfPresent(d, context.getString(R.string.probe_hardware_info), hwDdr);
 
         String socRamType = null;
         String[] soc = lookupSoc(cpuHardware);
@@ -769,12 +806,13 @@ public final class DeviceProbe {
         String ramEvidence = StrUtil.joinSkipBlanks(" ", ddr, dramInfo, ddrInfo, hwDdr);
         String ramType = detectRamType(ramEvidence);
         if (ramType == null) ramType = socRamType;
-        putIfPresent(d, "ram type", ramType);
+        putIfPresent(d, context.getString(R.string.probe_ram_type), ramType);
 
         String manufacturer = detectRamManufacturer(ramEvidence);
-        putIfPresent(d, "manufacturer", manufacturer);
+        putIfPresent(d, context.getString(R.string.probe_manufacturer), manufacturer);
 
-        String subtitle = StrUtil.joinSkipBlanks(" · ", d.get("capacity"), manufacturer, ramType);
+        String capacityForSubtitle = totalBytes > 0 ? roundedRamCapacity(totalBytes) : null;
+        String subtitle = StrUtil.joinSkipBlanks(" · ", capacityForSubtitle, manufacturer, ramType);
         return new Section(context.getString(R.string.probe_memory), subtitle, d);
     }
 
@@ -830,6 +868,8 @@ public final class DeviceProbe {
             List<String> i2cNames
     ) {
         LinkedHashMap<String, String> d = new LinkedHashMap<>();
+        String resolutionForSubtitle = null;
+        String physicalSizeForSubtitle = null;
 
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
@@ -849,14 +889,16 @@ public final class DeviceProbe {
         } catch (Exception ignored) {
         }
         if (widthPx > 0 && heightPx > 0) {
-            d.put(context.getString(R.string.probe_resolution), Math.max(widthPx, heightPx) + " x " + Math.min(widthPx, heightPx));
+            resolutionForSubtitle = Math.max(widthPx, heightPx) + " x " + Math.min(widthPx, heightPx);
+            d.put(context.getString(R.string.probe_resolution), resolutionForSubtitle);
         }
         d.put(context.getString(R.string.probe_density), dm.densityDpi + " dpi (" + resDensityBucket(dm.densityDpi) + ")");
         if (dm.xdpi > 0 && dm.ydpi > 0 && widthPx > 0 && heightPx > 0) {
             double wIn = widthPx / dm.xdpi;
             double hIn = heightPx / dm.ydpi;
             double diag = Math.sqrt(wIn * wIn + hIn * hIn);
-            d.put(context.getString(R.string.probe_physical_size), String.format(java.util.Locale.US, "%.2f in", diag));
+            physicalSizeForSubtitle = String.format(java.util.Locale.US, "%.2f in", diag);
+            d.put(context.getString(R.string.probe_physical_size), physicalSizeForSubtitle);
         }
         if (refreshHz != null && refreshHz > 0) {
             d.put(context.getString(R.string.probe_refresh_rate), ((int) (float) refreshHz) + " Hz");
@@ -866,15 +908,15 @@ public final class DeviceProbe {
             try {
                 Display disp = wm != null ? wm.getDefaultDisplay() : null;
                 Boolean hdr = disp != null ? disp.isHdr() : null;
-                if (Boolean.TRUE.equals(hdr)) d.put(context.getString(R.string.probe_hdr), "supported");
+                if (Boolean.TRUE.equals(hdr)) d.put(context.getString(R.string.probe_hdr), context.getString(R.string.value_supported));
             } catch (Exception ignored) {
             }
         }
 
         String strA = props.get("sys.panel.display");
         if (strA != null && !strA.equalsIgnoreCase("unknown")) d.put(context.getString(R.string.probe_panel), strA);
-        putIfPresent(d, "panel vendor", props.get("ro.boot.mi.panel_vendor"));
-        putIfPresent(d, "panel type", props.get("persist.vivo.phone.panel_type"));
+        putIfPresent(d, context.getString(R.string.probe_panel_vendor), props.get("ro.boot.mi.panel_vendor"));
+        putIfPresent(d, context.getString(R.string.probe_panel_type), props.get("persist.vivo.phone.panel_type"));
 
         StringBuilder joined = new StringBuilder();
         for (String n : i2cNames) {
@@ -884,7 +926,7 @@ public final class DeviceProbe {
         String touchVendor = StrUtil.matchVendor(joined.toString().toLowerCase(), TOUCH_VENDOR_MAP);
         if (touchVendor != null) d.put(context.getString(R.string.probe_touch_model), touchVendor);
 
-        String subtitle = StrUtil.firstNonBlank(d.get("resolution"), d.get("physical size"));
+        String subtitle = StrUtil.firstNonBlank(resolutionForSubtitle, physicalSizeForSubtitle);
         return new Section(context.getString(R.string.probe_display), subtitle, d);
     }
 
@@ -966,13 +1008,13 @@ public final class DeviceProbe {
                 d.put(key, value.replace("\n", ", "));
             }
         }
-        if (shell.readFile("/proc/gt9xx_config") != null) d.put(context.getString(R.string.probe_goodix_gt9xx), "present");
-        if (shell.readFile("/proc/gt1x_debug") != null) d.put(context.getString(R.string.probe_goodix_gt1x), "present");
-        if (shell.readFile("/proc/AEON_TPD") != null) d.put(context.getString(R.string.probe_aeon_tpd), "present");
+        if (shell.readFile("/proc/gt9xx_config") != null) d.put(context.getString(R.string.probe_goodix_gt9xx), context.getString(R.string.value_present));
+        if (shell.readFile("/proc/gt1x_debug") != null) d.put(context.getString(R.string.probe_goodix_gt1x), context.getString(R.string.value_present));
+        if (shell.readFile("/proc/AEON_TPD") != null) d.put(context.getString(R.string.probe_aeon_tpd), context.getString(R.string.value_present));
 
         for (String key : new String[]{"touch ic", "ctp", "touch_screen", "touchpanel", "tp maker"}) {
             String v = hwinfo.get(key);
-            if (v != null) d.put("hwinfo: " + key, v);
+            if (v != null) d.put(context.getString(R.string.probe_hwinfo_label, key), v);
         }
 
         StringBuilder combined = new StringBuilder();
@@ -991,38 +1033,43 @@ public final class DeviceProbe {
 
     private static Section battery(Context context) {
         LinkedHashMap<String, String> d = new LinkedHashMap<>();
+        String levelForSubtitle = null;
+        String designCapacityForSubtitle = null;
         Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         if (intent != null) {
             int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            if (level >= 0 && scale > 0) d.put(context.getString(R.string.probe_level), (level * 100 / scale) + "%");
+            if (level >= 0 && scale > 0) {
+                levelForSubtitle = (level * 100 / scale) + "%";
+                d.put(context.getString(R.string.probe_level), levelForSubtitle);
+            }
 
             int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
             String statusStr;
-            if (status == BatteryManager.BATTERY_STATUS_CHARGING) statusStr = "charging";
-            else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING) statusStr = "discharging";
-            else if (status == BatteryManager.BATTERY_STATUS_FULL) statusStr = "full";
-            else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) statusStr = "not charging";
+            if (status == BatteryManager.BATTERY_STATUS_CHARGING) statusStr = context.getString(R.string.probe_battery_status_charging);
+            else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING) statusStr = context.getString(R.string.probe_battery_status_discharging);
+            else if (status == BatteryManager.BATTERY_STATUS_FULL) statusStr = context.getString(R.string.probe_battery_status_full);
+            else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) statusStr = context.getString(R.string.probe_battery_status_not_charging);
             else statusStr = context.getString(R.string.unknown);
             d.put(context.getString(R.string.probe_status), statusStr);
 
             int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
             if (plugged > 0) {
                 String pluggedStr;
-                if (plugged == BatteryManager.BATTERY_PLUGGED_AC) pluggedStr = "AC";
-                else if (plugged == BatteryManager.BATTERY_PLUGGED_USB) pluggedStr = "USB";
-                else if (plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS) pluggedStr = "wireless";
+                if (plugged == BatteryManager.BATTERY_PLUGGED_AC) pluggedStr = context.getString(R.string.probe_battery_plugged_ac);
+                else if (plugged == BatteryManager.BATTERY_PLUGGED_USB) pluggedStr = context.getString(R.string.probe_battery_plugged_usb);
+                else if (plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS) pluggedStr = context.getString(R.string.probe_battery_plugged_wireless);
                 else pluggedStr = context.getString(R.string.yes);
                 d.put(context.getString(R.string.probe_plugged), pluggedStr);
             }
 
             int health = intent.getIntExtra(BatteryManager.EXTRA_HEALTH, -1);
             String healthStr;
-            if (health == BatteryManager.BATTERY_HEALTH_GOOD) healthStr = "good";
-            else if (health == BatteryManager.BATTERY_HEALTH_OVERHEAT) healthStr = "overheat";
-            else if (health == BatteryManager.BATTERY_HEALTH_DEAD) healthStr = "dead";
-            else if (health == BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE) healthStr = "over voltage";
-            else if (health == BatteryManager.BATTERY_HEALTH_COLD) healthStr = "cold";
+            if (health == BatteryManager.BATTERY_HEALTH_GOOD) healthStr = context.getString(R.string.probe_battery_health_good);
+            else if (health == BatteryManager.BATTERY_HEALTH_OVERHEAT) healthStr = context.getString(R.string.probe_battery_health_overheat);
+            else if (health == BatteryManager.BATTERY_HEALTH_DEAD) healthStr = context.getString(R.string.probe_battery_health_dead);
+            else if (health == BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE) healthStr = context.getString(R.string.probe_battery_health_over_voltage);
+            else if (health == BatteryManager.BATTERY_HEALTH_COLD) healthStr = context.getString(R.string.probe_battery_health_cold);
             else healthStr = context.getString(R.string.unknown);
             d.put(context.getString(R.string.probe_health), healthStr);
 
@@ -1046,7 +1093,10 @@ public final class DeviceProbe {
             Object instance = ctor.newInstance(context);
             Object capObj = cls.getMethod("getBatteryCapacity").invoke(instance);
             double cap = capObj instanceof Double ? (Double) capObj : 0;
-            if (cap > 0) d.put(context.getString(R.string.probe_design_capacity), Math.round(cap) + " mAh");
+            if (cap > 0) {
+                designCapacityForSubtitle = Math.round(cap) + " mAh";
+                d.put(context.getString(R.string.probe_design_capacity), designCapacityForSubtitle);
+            }
         } catch (Exception ignored) {
         }
 
@@ -1061,7 +1111,7 @@ public final class DeviceProbe {
             }
         }
 
-        String subtitle = StrUtil.firstNonBlank(d.get("design capacity"), d.get("level"));
+        String subtitle = StrUtil.firstNonBlank(designCapacityForSubtitle, levelForSubtitle);
         return new Section(context.getString(R.string.probe_battery), subtitle, d);
     }
 
@@ -1074,14 +1124,22 @@ public final class DeviceProbe {
         boolean hasFeature = context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC);
         d.put(context.getString(R.string.probe_supported), hasFeature ? context.getString(R.string.yes) : context.getString(R.string.no));
 
+        String chipTypeForSubtitle = null;
+        String driverHitForSubtitle = null;
+        String enabledForSubtitle = null;
+
         if (hasFeature) {
             try {
                 NfcAdapter adapter = NfcAdapter.getDefaultAdapter(context);
-                d.put(context.getString(R.string.probe_enabled), adapter != null && adapter.isEnabled() ? context.getString(R.string.yes) : context.getString(R.string.no));
+                enabledForSubtitle = adapter != null && adapter.isEnabled() ? context.getString(R.string.yes) : context.getString(R.string.no);
+                d.put(context.getString(R.string.probe_enabled), enabledForSubtitle);
             } catch (Exception ignored) {
             }
             String chipType = shell.readFile("/sys/nfc/nfc_chip_type");
-            if (chipType != null) d.put(context.getString(R.string.probe_chip_type), chipType);
+            if (chipType != null) {
+                d.put(context.getString(R.string.probe_chip_type), chipType);
+                chipTypeForSubtitle = chipType;
+            }
             String fwListing = shell.listDir("/vendor/firmware/nfc/");
             if (fwListing != null && !fwListing.trim().isEmpty()) d.put(context.getString(R.string.probe_firmware_present), context.getString(R.string.yes));
 
@@ -1093,11 +1151,14 @@ public final class DeviceProbe {
                     break;
                 }
             }
-            if (hit != null) d.put(context.getString(R.string.probe_driver_node), hit);
+            if (hit != null) {
+                d.put(context.getString(R.string.probe_driver_node), hit);
+                driverHitForSubtitle = hit;
+            }
         }
 
-        String subtitle = !hasFeature ? "not supported"
-                : StrUtil.firstNonBlank(d.get("chip type"), d.get("driver node"), d.get("enabled"));
+        String subtitle = !hasFeature ? context.getString(R.string.value_not_supported)
+                : StrUtil.firstNonBlank(chipTypeForSubtitle, driverHitForSubtitle, enabledForSubtitle);
         return new Section(context.getString(R.string.probe_nfc), subtitle, d);
     }
 
@@ -1110,6 +1171,9 @@ public final class DeviceProbe {
         boolean hasFeature = context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
         d.put(context.getString(R.string.probe_supported), hasFeature ? context.getString(R.string.yes) : context.getString(R.string.no));
 
+        String btNameForSubtitle = null;
+        String chipsetVersionForSubtitle = null;
+
         if (hasFeature) {
             try {
                 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
@@ -1121,6 +1185,7 @@ public final class DeviceProbe {
                     try {
                         String name = adapter.getName();
                         d.put(context.getString(R.string.probe_name), name != null ? name : "");
+                        btNameForSubtitle = name;
                     } catch (Exception ignored) {
                     }
                 }
@@ -1133,13 +1198,16 @@ public final class DeviceProbe {
             if (hint == null) hint = "";
             String[] row = lookupWireless(hint);
             if (row != null) {
-                if (row[3] != null) d.put(context.getString(R.string.probe_chipset_bt_version), row[3]);
+                if (row[3] != null) {
+                    d.put(context.getString(R.string.probe_chipset_bt_version), row[3]);
+                    chipsetVersionForSubtitle = row[3];
+                }
                 d.put(context.getString(R.string.probe_combo_chip_vendor), row[1] != null ? row[1] : "");
             }
         }
 
-        String subtitle = !hasFeature ? "not supported"
-                : StrUtil.firstNonBlank(d.get("chipset bt version"), d.get("name"));
+        String subtitle = !hasFeature ? context.getString(R.string.value_not_supported)
+                : StrUtil.firstNonBlank(chipsetVersionForSubtitle, btNameForSubtitle);
         return new Section(context.getString(R.string.probe_bluetooth), subtitle, d);
     }
 
@@ -1149,6 +1217,7 @@ public final class DeviceProbe {
 
     private static Section wifiAndEthernet(Context context, Map<String, String> props, String cpuHardware) {
         LinkedHashMap<String, String> d = new LinkedHashMap<>();
+        String wifiStandardForSubtitle = null;
 
         boolean hasWifi = context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI);
         d.put(context.getString(R.string.probe_wifi_supported), hasWifi ? context.getString(R.string.yes) : context.getString(R.string.no));
@@ -1161,7 +1230,10 @@ public final class DeviceProbe {
             if (hint == null) hint = "";
             String[] row = lookupWireless(hint);
             if (row != null) {
-                if (row[2] != null) d.put(context.getString(R.string.probe_chipset_wifi_standard), row[2]);
+                if (row[2] != null) {
+                    d.put(context.getString(R.string.probe_chipset_wifi_standard), row[2]);
+                    wifiStandardForSubtitle = row[2];
+                }
                 if (row[1] != null) d.put(context.getString(R.string.probe_combo_chip_vendor), row[1]);
             }
         }
@@ -1182,14 +1254,48 @@ public final class DeviceProbe {
                 File stateFile = new File("/sys/class/net/" + iface + "/operstate");
                 if (stateFile.canRead()) {
                     String state = readFileText(stateFile).trim();
-                    d.put(iface + " state", state);
+                    d.put(context.getString(R.string.probe_iface_state_label, iface), state);
                 }
             }
         } catch (Exception ignored) {
         }
 
-        String subtitle = StrUtil.firstNonBlank(d.get("chipset wifi standard"), hasWifi ? "supported" : null);
+        String subtitle = StrUtil.firstNonBlank(wifiStandardForSubtitle, hasWifi ? context.getString(R.string.value_supported) : null);
         return new Section(context.getString(R.string.probe_wifi__ethernet), subtitle, d);
+    }
+
+    // ------------------------------------------------------------------
+    // x) LTE (Baseband/Cellular)
+    // ------------------------------------------------------------------
+
+    private static Section lte(Context context, Map<String, String> props, String cpuHardware) {
+        LinkedHashMap<String, String> d = new LinkedHashMap<>();
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean hasFeature = false;
+        if (cm != null) {
+            try {
+                android.net.NetworkInfo info = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                hasFeature = info != null;
+            } catch (Exception ignored) {
+            }
+        }
+        
+        if (hasFeature) {
+            String hint = StrUtil.firstNonBlank(cpuHardware, Build.HARDWARE, props.get("ro.board.platform"));
+            if (hint == null) hint = "";
+            String[] soc = lookupSoc(hint);
+            String name = soc != null && soc.length > 1 ? soc[1] : null;
+            String modem = soc != null && soc.length > 3 ? soc[3] : null;
+            String baseband = StrUtil.joinSkipBlanks(", ", name, modem);
+            putIfPresent(d, context.getString(R.string.probe_baseband_lowercase), baseband);
+            
+            putIfPresent(d, context.getString(R.string.probe_operator_name), props.get("gsm.operator.alpha"));
+            putIfPresent(d, context.getString(R.string.probe_network_type), props.get("gsm.network.type"));
+        }
+
+        String subtitle = hasFeature ? context.getString(R.string.value_supported) : context.getString(R.string.value_not_supported);
+        return new Section(context.getString(R.string.probe_lte), subtitle, d);
     }
 
     private static String readFileText(File f) throws Exception {
@@ -1230,7 +1336,7 @@ public final class DeviceProbe {
             }
         }
 
-        String subtitle = !hasFeature ? "not supported" : "supported";
+        String subtitle = !hasFeature ? context.getString(R.string.value_not_supported) : context.getString(R.string.value_supported);
         return new Section(context.getString(R.string.probe_infrared), subtitle, d);
     }
 
@@ -1246,9 +1352,11 @@ public final class DeviceProbe {
     ) {
         LinkedHashMap<String, String> d = new LinkedHashMap<>();
         boolean hasFeature = props.get("ro.hardware.fm") != null || props.get("ro.fm.transmitter") != null;
-        d.put(context.getString(R.string.probe_supported), hasFeature ? context.getString(R.string.yes) : context.getString(R.string.unknown));
-        putIfPresent(d, "fm hardware", props.get("ro.hardware.fm"));
-        putIfPresent(d, "fm transmitter", props.get("ro.fm.transmitter"));
+        String supportedForSubtitle = hasFeature ? context.getString(R.string.yes) : context.getString(R.string.unknown);
+        d.put(context.getString(R.string.probe_supported), supportedForSubtitle);
+        String fmHardware = props.get("ro.hardware.fm");
+        putIfPresent(d, context.getString(R.string.probe_fm_hardware), fmHardware);
+        putIfPresent(d, context.getString(R.string.probe_fm_transmitter), props.get("ro.fm.transmitter"));
 
         Map<String, String> fmDriverMap = driverVendorMapFor("fm");
         String hit = null;
@@ -1260,7 +1368,7 @@ public final class DeviceProbe {
         }
         if (hit != null) d.put(context.getString(R.string.probe_driver_node), hit);
 
-        String subtitle = StrUtil.firstNonBlank(d.get("fm hardware"), d.get("driver node"), d.get("supported"));
+        String subtitle = StrUtil.firstNonBlank(fmHardware, hit, supportedForSubtitle);
         return new Section(context.getString(R.string.probe_fm_radio), subtitle, d);
     }
 
@@ -1273,7 +1381,7 @@ public final class DeviceProbe {
         PackageManager pm = context.getPackageManager();
         boolean hasAny = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
         d.put(context.getString(R.string.probe_supported), hasAny ? context.getString(R.string.yes) : context.getString(R.string.no));
-        if (!hasAny) return new Section(context.getString(R.string.probe_camera), "not supported", d);
+        if (!hasAny) return new Section(context.getString(R.string.probe_camera), context.getString(R.string.value_not_supported), d);
 
         d.put(context.getString(R.string.probe_flash), pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH) ? context.getString(R.string.yes) : context.getString(R.string.no));
 
@@ -1287,9 +1395,9 @@ public final class DeviceProbe {
                     CameraCharacteristics chars = manager.getCameraCharacteristics(id);
                     Integer facingVal = chars.get(CameraCharacteristics.LENS_FACING);
                     String facing;
-                    if (facingVal != null && facingVal == CameraCharacteristics.LENS_FACING_FRONT) facing = "front";
-                    else if (facingVal != null && facingVal == CameraCharacteristics.LENS_FACING_BACK) facing = "back";
-                    else if (facingVal != null && facingVal == CameraCharacteristics.LENS_FACING_EXTERNAL) facing = "external";
+                    if (facingVal != null && facingVal == CameraCharacteristics.LENS_FACING_FRONT) facing = context.getString(R.string.probe_camera_facing_front);
+                    else if (facingVal != null && facingVal == CameraCharacteristics.LENS_FACING_BACK) facing = context.getString(R.string.probe_camera_facing_back);
+                    else if (facingVal != null && facingVal == CameraCharacteristics.LENS_FACING_EXTERNAL) facing = context.getString(R.string.probe_camera_facing_external);
                     else facing = context.getString(R.string.unknown);
 
                     Size pixelArraySize = chars.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
@@ -1311,7 +1419,7 @@ public final class DeviceProbe {
 
                     Integer level = chars.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
                     String combined = StrUtil.joinSkipBlanks(", ", mp, focal, level != null ? String.valueOf(level) : null);
-                    d.put("camera " + id + " (" + facing + ")", combined != null ? combined : facing);
+                    d.put(context.getString(R.string.probe_camera_row_label, id, facing), combined != null ? combined : facing);
                 }
             } catch (Exception ignored) {
             }
@@ -1321,15 +1429,17 @@ public final class DeviceProbe {
                 for (int i = 0; i < count; i++) {
                     android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
                     android.hardware.Camera.getCameraInfo(i, info);
-                    String facing = info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT ? "front" : "back";
-                    d.put("camera " + i + " (" + facing + ")", facing);
+                    String facing = info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT
+                            ? context.getString(R.string.probe_camera_facing_front)
+                            : context.getString(R.string.probe_camera_facing_back);
+                    d.put(context.getString(R.string.probe_camera_row_label, String.valueOf(i), facing), facing);
                 }
             } catch (Exception ignored) {
             }
         }
         d.put(context.getString(R.string.probe_camera_count), String.valueOf(count));
 
-        String subtitle = count + " camera(s)";
+        String subtitle = context.getString(R.string.probe_camera_count_subtitle, count);
         return new Section(context.getString(R.string.probe_camera), subtitle, d);
     }
 

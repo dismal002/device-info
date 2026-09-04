@@ -8,7 +8,15 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-
+/**
+ * Java rewrite of the original {@code g.java} shell executor.
+ *
+ * Keeps a single long-lived {@code sh}/{@code su} process open and pipes commands to it,
+ * reading back output up to a sentinel line. This is the same trick the
+ * original used (cheaper than spawning a process per command) and it works
+ * unchanged from API 19 all the way to modern Android - it's plain
+ * Runtime.exec()/stdin-stdout piping, nothing version-gated.
+ */
 public final class ShellExec {
 
     private static final String TAG = "deviceprobe";

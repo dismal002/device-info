@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">设备信息</string>
+
+    <!-- Category headers -->
+    <string name="header_category_wireless_networks">无线和网络</string>
+    <string name="header_category_device">设备</string>
+    <string name="header_category_personal">个人</string>
+    <string name="header_category_system">系统</string>
+
+    <!-- Wireless & networks tiles -->
+    <string name="wifi_settings_title">Wi\u2011Fi</string>
+    <string name="bluetooth_settings_title">蓝牙</string>
+    <string name="sim_settings_title">SIM 卡</string>
+    <string name="data_usage_summary_title">数据使用量</string>
+    <string name="radio_controls_title">更多</string>
+
+    <!-- Device tiles -->
+    <string name="home_settings">主页</string>
+    <string name="display_settings">显示</string>
+    <string name="notification_settings">声音和通知</string>
+    <string name="applications_settings">应用</string>
+    <string name="storage_usb_settings">存储和 USB</string>
+    <string name="power_usage_summary_title">电池</string>
+    <string name="memory_settings_title">内存</string>
+    <string name="user_settings_title">用户</string>
+    <string name="nfc_payment_settings_title">触碰付款</string>
+
+    <!-- Personal tiles -->
+    <string name="location_settings_title">位置</string>
+    <string name="security_settings_title">安全</string>
+    <string name="account_settings_title">账号</string>
+    <string name="language_settings">语言和输入法</string>
+    <string name="privacy_settings">备份和重置</string>
+
+    <!-- System tiles -->
+    <string name="date_and_time_settings_title">日期和时间</string>
+    <string name="accessibility_settings">无障碍</string>
+    <string name="print_settings">打印</string>
+    <string name="development_settings_title">开发者选项</string>
+    <string name="about_settings">关于应用</string>
+
+    <!-- About device screen -->
+    <string name="app_version_title">应用版本</string>
+    <string name="use_root_title">使用 root 权限获取更详细的设备信息</string>
+    <string name="open_source_licenses_title">开源许可证</string>
+    <string name="view_on_github_title">在 Github 上查看</string>
+
+    <string name="system_update_settings_list_item_title">系统更新</string>
+    <string name="device_status">状态</string>
+    <string name="device_status_summary">电话号码、信号等</string>
+    <string name="manual">手册</string>
+    <string name="legal_information">法律信息</string>
+    <string name="regulatory_information">监管信息</string>
+    <string name="device_feedback">发送有关此设备的反馈</string>
+    <string name="model_number">型号</string>
+    <string name="firmware_version">Android 版本</string>
+    <string name="security_patch">Android 安全补丁程序级别</string>
+    <string name="fcc_equipment_id">设备 ID</string>
+    <string name="baseband_version">基带版本</string>
+    <string name="kernel_version">内核版本</string>
+    <string name="build_number">版本号</string>
+    <string name="selinux_status">SELinux 状态</string>
+    <string name="selinux_status_enforcing">强制</string>
+    <string name="device_info_default">未知</string>
+    <string name="not_implemented_toast">此项目在这个纯 UI 克隆中未实现</string>
+
+    <!-- Spec tile titles (main screen, backed by DeviceProbe.Section) -->
+    <string name="spec_wifi_ethernet_title">Wi\u2011Fi 和以太网</string>
+    <string name="spec_nfc_title">NFC</string>
+    <string name="spec_infrared_title">红外</string>
+    <string name="spec_fm_radio_title">FM 收音机</string>
+    <string name="spec_machine_title">机器</string>
+    <string name="spec_platform_title">平台</string>
+    <string name="spec_chip_title">芯片 (SoC)</string>
+    <string name="spec_touch_panel_title">触摸屏</string>
+    <string name="spec_camera_title">相机</string>
+    <string name="spec_root_title">Root</string>
+    <string name="spec_welcome_check_title">迎新设备检查</string>
+
+    <!-- Spec tile row placeholders/status -->
+    <string name="spec_loading">正在读取\u2026</string>
+    <string name="spec_no_values">在此设备上不可用。</string>
+    <string name="spec_load_failed">无法读取设备信息。</string>
+    <string name="action_refresh">刷新</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="unknown">未知</string>
+    <string name="probe_result">结果</string>
+    <string name="probe_build_type">构建类型</string>
+    <string name="probe_root_indicator_build_type">Root 指示器：构建类型</string>
+    <string name="probe_build_tags">构建标签</string>
+    <string name="probe_root_indicator_build_tags">Root 指示器：构建标签</string>
+    <string name="probe_manufacturer">制造商</string>
+    <string name="probe_brand">品牌</string>
+    <string name="probe_product">产品</string>
+    <string name="probe_model">型号</string>
+    <string name="probe_marketing_name">市场名称</string>
+    <string name="probe_device_name">设备名称</string>
+    <string name="probe_android_version">Android 版本</string>
+    <string name="probe_sdk_level">SDK 级别</string>
+    <string name="probe_build_id">构建 ID</string>
+    <string name="probe_build_display">构建显示</string>
+    <string name="probe_fingerprint">指纹</string>
+    <string name="probe_custom_rom">自定义 ROM</string>
+    <string name="probe_hardware_id">硬件 ID</string>
+    <string name="probe_cpu_reported_by_kernel">内核报告的 CPU</string>
+    <string name="probe_cpu_architecture">CPU 架构</string>
+    <string name="probe_abi">ABI</string>
+    <string name="probe_cores">核心数</string>
+    <string name="probe_vendor">供应商</string>
+    <string name="probe_family">系列</string>
+    <string name="probe_capacity">容量</string>
+    <string name="probe_emmc">eMMC</string>
+    <string name="probe_ufs">UFS</string>
+    <string name="probe_ufs_revision">UFS 修订版本</string>
+    <string name="probe_storage_model">存储型号</string>
+    <string name="probe_boot_device">启动设备</string>
+    <string name="probe_data_filesystem">数据文件系统</string>
+    <string name="probe_ufs_health">UFS 健康状况</string>
+    <string name="probe_hwinfo_ufs">hwinfo: UFS</string>
+    <string name="probe_hwinfo_emmc">hwinfo: eMMC</string>
+    <string name="probe_resolution">分辨率</string>
+    <string name="probe_density">密度</string>
+    <string name="probe_physical_size">物理尺寸</string>
+    <string name="probe_refresh_rate">刷新率</string>
+    <string name="probe_hdr">HDR</string>
+    <string name="probe_panel">面板</string>
+    <string name="probe_touch_model">触摸型号</string>
+    <string name="probe_multi_touch">多点触控</string>
+    <string name="probe_driver_node">驱动节点</string>
+    <string name="probe_goodix_gt9xx">汇顶 gt9xx</string>
+    <string name="probe_goodix_gt1x">汇顶 gt1x</string>
+    <string name="probe_aeon_tpd">aeon tpd</string>
+    <string name="probe_level">电量</string>
+    <string name="probe_status">状态</string>
+    <string name="probe_plugged">充电方式</string>
+    <string name="probe_health">健康状况</string>
+    <string name="probe_technology">技术</string>
+    <string name="probe_temperature">温度</string>
+    <string name="probe_voltage">电压</string>
+    <string name="probe_design_capacity">设计容量</string>
+    <string name="probe_current_now">当前电流</string>
+    <string name="probe_supported">支持</string>
+    <string name="probe_enabled">已启用</string>
+    <string name="probe_chip_type">芯片类型</string>
+    <string name="probe_firmware_present">固件存在</string>
+    <string name="probe_name">名称</string>
+    <string name="probe_low_energy">低功耗 (LE)</string>
+    <string name="probe_chipset_bt_version">芯片蓝牙版本</string>
+    <string name="probe_combo_chip_vendor">组合芯片供应商</string>
+    <string name="probe_wifi_supported">支持 Wi-Fi</string>
+    <string name="probe_wifi_direct">Wi-Fi Direct</string>
+    <string name="probe_6_ghz_band">6 GHz 频段</string>
+    <string name="probe_chipset_wifi_standard">芯片 Wi-Fi 标准</string>
+    <string name="probe_ethernet_supported">支持以太网</string>
+    <string name="probe_ethernet_interfaces">以太网接口</string>
+    <string name="probe_carrier_frequency_ranges_hz">载波频率范围 (Hz)</string>
+    <string name="probe_flash">闪存</string>
+    <string name="probe_camera_count">相机数量</string>
+    <string name="probe_welcome_device_check">迎新设备检查</string>
+    <string name="probe_root">Root</string>
+    <string name="probe_machine">机器</string>
+    <string name="probe_platform">平台</string>
+    <string name="probe_chip_soc">芯片 (SoC)</string>
+    <string name="probe_storage">存储</string>
+    <string name="probe_memory">内存</string>
+    <string name="probe_display">显示</string>
+    <string name="probe_touch_panel">触摸屏</string>
+    <string name="probe_battery">电池</string>
+    <string name="probe_nfc">NFC</string>
+    <string name="probe_bluetooth">蓝牙</string>
+    <string name="probe_wifi__ethernet">Wi-Fi 和以太网</string>
+    <string name="probe_infrared">红外</string>
+    <string name="probe_fm_radio">FM 收音机</string>
+    <string name="probe_camera">相机</string>
+    <string name="probe_hardware">硬件</string>
+    <string name="probe_processor">处理器</string>
+
+    <!-- Generic state values reused across sections -->
+    <string name="value_supported">支持</string>
+    <string name="value_not_supported">不支持</string>
+    <string name="value_present">存在</string>
+    <string name="value_found">已找到</string>
+    <string name="value_not_set">未设置</string>
+    <string name="value_installed">已安装</string>
+
+    <!-- Welcome Device Check -->
+    <string name="probe_app_found_label">已找到应用：%1$s</string>
+    <string name="probe_system_property_label">系统属性：%1$s</string>
+    <string name="probe_system_setting_label">系统设置：%1$s</string>
+    <string name="probe_welcome_check_result_yes">可能为迎新设备</string>
+    <string name="probe_welcome_check_result_no">可能不是迎新设备</string>
+
+    <!-- Root check -->
+    <string name="probe_su_binary_label">su 二进制文件：%1$s</string>
+    <string name="probe_root_indicator_ro_secure">Root 指示器：ro.secure</string>
+    <string name="probe_root_indicator_ro_secure_value">0 (非安全构建)</string>
+    <string name="probe_root_indicator_ro_debuggable">Root 指示器：ro.debuggable</string>
+    <string name="probe_root_indicator_ro_debuggable_value">1 (可调试构建)</string>
+    <string name="probe_engineering_build">工程构建 (Engineering build)</string>
+    <string name="probe_test_keys">测试密钥 (test-keys)</string>
+    <string name="probe_root_indicators_detected">检测到 Root 指示器</string>
+    <string name="probe_no_root_indicators_detected">未检测到 Root 指示器</string>
+
+    <!-- Chip (SoC) detail rows -->
+    <string name="probe_process_node">制程工艺</string>
+    <string name="probe_modem">调制解调器</string>
+    <string name="probe_cpu">CPU</string>
+    <string name="probe_gpu">GPU</string>
+    <string name="probe_npu_dsp">NPU / DSP</string>
+    <string name="probe_ram_type">RAM 类型</string>
+    <string name="probe_storage_interface">存储接口</string>
+    <string name="probe_wifi">Wi-Fi</string>
+    <string name="probe_bluetooth_lower">蓝牙</string>
+    <string name="probe_gnss">GNSS</string>
+    <string name="probe_fast_charging">快充</string>
+    <string name="probe_usb">USB</string>
+    <string name="probe_camera_isp">相机 ISP</string>
+
+    <!-- Storage detail rows -->
+    <string name="probe_ufs_hint_vendor">UFS 提示 (供应商)</string>
+    <string name="probe_ufs_hint_bootloader">UFS 提示 (引导加载程序)</string>
+    <string name="probe_storage_manufacturer_hint">存储制造商提示</string>
+
+    <!-- Memory detail rows -->
+    <string name="probe_ddr_hint">DDR 提示</string>
+    <string name="probe_dram_info">DRAM 信息</string>
+    <string name="probe_ddr_info">DDR 信息</string>
+    <string name="probe_hardware_info">硬件信息</string>
+
+    <!-- Display detail rows -->
+    <string name="probe_panel_vendor">面板供应商</string>
+    <string name="probe_panel_type">面板类型</string>
+
+    <!-- Touch panel -->
+    <string name="probe_hwinfo_label">hwinfo：%1$s</string>
+
+    <!-- FM radio -->
+    <string name="probe_fm_hardware">FM 硬件</string>
+    <string name="probe_fm_transmitter">FM 发射器</string>
+
+    <!-- Battery -->
+    <string name="probe_battery_status_charging">充电中</string>
+    <string name="probe_battery_status_discharging">放电中</string>
+    <string name="probe_battery_status_full">已充满</string>
+    <string name="probe_battery_status_not_charging">未充电</string>
+    <string name="probe_battery_plugged_ac">交流电 (AC)</string>
+    <string name="probe_battery_plugged_usb">USB</string>
+    <string name="probe_battery_plugged_wireless">无线</string>
+    <string name="probe_battery_health_good">良好</string>
+    <string name="probe_battery_health_overheat">过热</string>
+    <string name="probe_battery_health_dead">没电</string>
+    <string name="probe_battery_health_over_voltage">过压</string>
+    <string name="probe_battery_health_cold">过冷</string>
+
+    <!-- WiFi &amp; Ethernet -->
+    <string name="probe_iface_state_label">%1$s 状态</string>
+
+    <!-- Camera -->
+    <string name="probe_camera_facing_front">前置</string>
+    <string name="probe_camera_facing_back">后置</string>
+    <string name="probe_camera_facing_external">外接</string>
+    <string name="probe_camera_row_label">相机 %1$s (%2$s)</string>
+    <string name="probe_camera_count_subtitle">%1$d 个相机</string>
+</resources>

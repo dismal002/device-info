@@ -63,13 +63,14 @@
     <string name="selinux_status">SELinux status</string>
     <string name="selinux_status_enforcing">Enforcing</string>
     <string name="device_info_default">Unknown</string>
-    <string name="not_implemented_toast">This feature has not been implemented at this time</string>
+    <string name="not_implemented_toast">This item is not implemented in this UI-only clone</string>
 
     <!-- Spec tile titles (main screen, backed by DeviceProbe.Section) -->
     <string name="spec_wifi_ethernet_title">Wi\u2011Fi &amp; Ethernet</string>
     <string name="spec_nfc_title">NFC</string>
     <string name="spec_infrared_title">Infrared</string>
     <string name="spec_fm_radio_title">FM radio</string>
+    <string name="spec_lte_title">LTE</string>
     <string name="spec_machine_title">Machine</string>
     <string name="spec_platform_title">Platform</string>
     <string name="spec_chip_title">Chip (SoC)</string>
@@ -173,7 +174,98 @@
     <string name="probe_wifi__ethernet">WiFi &amp; Ethernet</string>
     <string name="probe_infrared">Infrared</string>
     <string name="probe_fm_radio">FM radio</string>
+    <string name="probe_lte">LTE</string>
     <string name="probe_camera">Camera</string>
     <string name="probe_hardware">Hardware</string>
     <string name="probe_processor">Processor</string>
+    <string name="probe_baseband_lowercase">baseband</string>
+    <string name="probe_operator_name">operator name</string>
+    <string name="probe_network_type">network type</string>
+
+    <!-- Generic state values reused across sections -->
+    <string name="value_supported">supported</string>
+    <string name="value_not_supported">not supported</string>
+    <string name="value_present">present</string>
+    <string name="value_found">Found</string>
+    <string name="value_not_set">Not set</string>
+    <string name="value_installed">Installed</string>
+
+    <!-- Welcome Device Check -->
+    <string name="probe_app_found_label">App found: %1$s</string>
+    <string name="probe_system_property_label">System property: %1$s</string>
+    <string name="probe_system_setting_label">System setting: %1$s</string>
+    <string name="probe_welcome_check_result_yes">Likely a Welcome Device</string>
+    <string name="probe_welcome_check_result_no">Likely not a Welcome Device</string>
+
+    <!-- Root check -->
+    <string name="probe_su_binary_label">su binary: %1$s</string>
+    <string name="probe_root_indicator_ro_secure">Root indicator: ro.secure</string>
+    <string name="probe_root_indicator_ro_secure_value">0 (non-secure build)</string>
+    <string name="probe_root_indicator_ro_debuggable">Root indicator: ro.debuggable</string>
+    <string name="probe_root_indicator_ro_debuggable_value">1 (debuggable build)</string>
+    <string name="probe_engineering_build">Engineering build</string>
+    <string name="probe_test_keys">test-keys</string>
+    <string name="probe_root_indicators_detected">Root indicators detected</string>
+    <string name="probe_no_root_indicators_detected">No root indicators detected</string>
+
+    <!-- Chip (SoC) detail rows -->
+    <string name="probe_process_node">process node</string>
+    <string name="probe_modem">modem</string>
+    <string name="probe_cpu">cpu</string>
+    <string name="probe_gpu">gpu</string>
+    <string name="probe_npu_dsp">npu / dsp</string>
+    <string name="probe_ram_type">ram type</string>
+    <string name="probe_storage_interface">storage interface</string>
+    <string name="probe_wifi">wifi</string>
+    <string name="probe_bluetooth_lower">bluetooth</string>
+    <string name="probe_gnss">gnss</string>
+    <string name="probe_fast_charging">fast charging</string>
+    <string name="probe_usb">usb</string>
+    <string name="probe_camera_isp">camera isp</string>
+
+    <!-- Storage detail rows -->
+    <string name="probe_ufs_hint_vendor">ufs hint (vendor)</string>
+    <string name="probe_ufs_hint_bootloader">ufs hint (bootloader)</string>
+    <string name="probe_storage_manufacturer_hint">storage manufacturer hint</string>
+
+    <!-- Memory detail rows -->
+    <string name="probe_ddr_hint">ddr hint</string>
+    <string name="probe_dram_info">dram info</string>
+    <string name="probe_ddr_info">ddr info</string>
+    <string name="probe_hardware_info">hardware info</string>
+
+    <!-- Display detail rows -->
+    <string name="probe_panel_vendor">panel vendor</string>
+    <string name="probe_panel_type">panel type</string>
+
+    <!-- Touch panel -->
+    <string name="probe_hwinfo_label">hwinfo: %1$s</string>
+
+    <!-- FM radio -->
+    <string name="probe_fm_hardware">fm hardware</string>
+    <string name="probe_fm_transmitter">fm transmitter</string>
+
+    <!-- Battery -->
+    <string name="probe_battery_status_charging">charging</string>
+    <string name="probe_battery_status_discharging">discharging</string>
+    <string name="probe_battery_status_full">full</string>
+    <string name="probe_battery_status_not_charging">not charging</string>
+    <string name="probe_battery_plugged_ac">AC</string>
+    <string name="probe_battery_plugged_usb">USB</string>
+    <string name="probe_battery_plugged_wireless">wireless</string>
+    <string name="probe_battery_health_good">good</string>
+    <string name="probe_battery_health_overheat">overheat</string>
+    <string name="probe_battery_health_dead">dead</string>
+    <string name="probe_battery_health_over_voltage">over voltage</string>
+    <string name="probe_battery_health_cold">cold</string>
+
+    <!-- WiFi &amp; Ethernet -->
+    <string name="probe_iface_state_label">%1$s state</string>
+
+    <!-- Camera -->
+    <string name="probe_camera_facing_front">front</string>
+    <string name="probe_camera_facing_back">back</string>
+    <string name="probe_camera_facing_external">external</string>
+    <string name="probe_camera_row_label">camera %1$s (%2$s)</string>
+    <string name="probe_camera_count_subtitle">%1$d camera(s)</string>
 </resources>

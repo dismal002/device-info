@@ -6,12 +6,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * Java rewrite of the original {@code h.java} string-utility grab-bag.
+ *
+ * The original had ~30 tiny helpers used across every probe category
+ * (wifi, camera, sensors, etc). This keeps only what the simplified
+ * probe (phone model / build / chip / storage / touch) actually needs.
+ */
 final class StrUtil {
 
     private StrUtil() {
     }
 
+    /** First non-null/non-blank value, or null. */
     static String firstNonBlank(String... values) {
         for (String v : values) {
             if (v != null && !v.trim().isEmpty()) return v;
@@ -19,10 +26,12 @@ final class StrUtil {
         return null;
     }
 
+    /** Null-safe blank check (mirrors the original's h.c()). */
     static boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
 
+    /** Null-safe non-blank-or-null (mirrors the original's h.b()). */
     static String blankToNull(String s) {
         return isBlank(s) ? null : s;
     }

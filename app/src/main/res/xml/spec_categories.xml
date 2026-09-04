@@ -35,6 +35,12 @@
             android:icon="@drawable/ic_settings_fmradio_alpha"
             app:specSection="FM radio" />
 
+        <spec-tile
+            android:key="lte"
+            android:title="@string/spec_lte_title"
+            android:icon="@drawable/ic_settings_lte_alpha"
+            app:specSection="LTE" />
+
     </spec-category>
 
     <!-- DEVICE -->
