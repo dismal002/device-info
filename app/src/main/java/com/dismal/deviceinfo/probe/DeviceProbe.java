@@ -379,19 +379,26 @@ public final class DeviceProbe {
     // Root
     // ------------------------------------------------------------------
 
-    private static Section rootCheck(Context context, Map<String, String> props) {
-        LinkedHashMap<String, String> d = new LinkedHashMap<>();
-        boolean rootIndicatorFound = false;
-
+    public static boolean hasRootAccess() {
         String[] suPaths = {
                 "/system/bin/su", "/system/xbin/su", "/sbin/su", "/vendor/bin/su",
                 "/su/bin/su", "/system/bin/.ext/su", "/system/usr/we-need-root/su"
         };
         for (String path : suPaths) {
             if (new File(path).isFile()) {
-                d.put(context.getString(R.string.probe_su_binary_label, path), context.getString(R.string.value_found));
-                rootIndicatorFound = true;
+                return true;
             }
+        }
+        return false;
+    }
+
+    private static Section rootCheck(Context context, Map<String, String> props) {
+        LinkedHashMap<String, String> d = new LinkedHashMap<>();
+        boolean rootIndicatorFound = false;
+
+        if (hasRootAccess()) {
+            d.put(context.getString(R.string.probe_su_binary_label, "su"), context.getString(R.string.value_found));
+            rootIndicatorFound = true;
         }
 
         String roSecure = props.get("ro.secure");
@@ -1271,13 +1278,15 @@ public final class DeviceProbe {
     private static Section lte(Context context, Map<String, String> props, String cpuHardware) {
         LinkedHashMap<String, String> d = new LinkedHashMap<>();
 
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        boolean hasFeature = false;
-        if (cm != null) {
-            try {
-                android.net.NetworkInfo info = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-                hasFeature = info != null;
-            } catch (Exception ignored) {
+        boolean hasFeature = context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+        if (!hasFeature) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null) {
+                try {
+                    android.net.NetworkInfo info = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                    hasFeature = info != null;
+                } catch (Exception ignored) {
+                }
             }
         }
         
@@ -1290,8 +1299,26 @@ public final class DeviceProbe {
             String baseband = StrUtil.joinSkipBlanks(", ", name, modem);
             putIfPresent(d, context.getString(R.string.probe_baseband_lowercase), baseband);
             
-            putIfPresent(d, context.getString(R.string.probe_operator_name), props.get("gsm.operator.alpha"));
-            putIfPresent(d, context.getString(R.string.probe_network_type), props.get("gsm.network.type"));
+            String operatorName = props.get("gsm.operator.alpha");
+            String networkType = props.get("gsm.network.type");
+            
+            try {
+                android.telephony.TelephonyManager tm = (android.telephony.TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                if (tm != null) {
+                    String tmOperator = tm.getNetworkOperatorName();
+                    if (tmOperator != null && !tmOperator.trim().isEmpty()) {
+                        operatorName = tmOperator;
+                    }
+                    int tmNetType = tm.getNetworkType();
+                    if (tmNetType != android.telephony.TelephonyManager.NETWORK_TYPE_UNKNOWN) {
+                        networkType = String.valueOf(tmNetType);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            putIfPresent(d, context.getString(R.string.probe_operator_name), operatorName);
+            putIfPresent(d, context.getString(R.string.probe_network_type), networkType);
         }
 
         String subtitle = hasFeature ? context.getString(R.string.value_supported) : context.getString(R.string.value_not_supported);

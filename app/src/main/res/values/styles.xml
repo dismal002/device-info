@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="MainAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/settings_primary</item>
         <item name="colorPrimaryDark">@color/settings_primary_dark</item>
         <item name="colorAccent">@color/settings_accent</item>
         <item name="android:windowBackground">@color/settings_background</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
 </resources>

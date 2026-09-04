@@ -10,14 +10,16 @@ public class AboutRow {
     private final String title;
     private final String staticSummary;
     private final boolean dynamic;
-    private final boolean isCheckbox;
+    private final boolean isToggle;
+    private final boolean isEnabled;
 
-    public AboutRow(String key, String title, String staticSummary, boolean dynamic, boolean isCheckbox) {
+    public AboutRow(String key, String title, String staticSummary, boolean dynamic, boolean isToggle, boolean isEnabled) {
         this.key = key;
         this.title = title;
         this.staticSummary = staticSummary;
         this.dynamic = dynamic;
-        this.isCheckbox = isCheckbox;
+        this.isToggle = isToggle;
+        this.isEnabled = isEnabled;
     }
 
     public String getKey() {
@@ -36,7 +38,11 @@ public class AboutRow {
         return dynamic;
     }
     
-    public boolean isCheckbox() {
-        return isCheckbox;
+    public boolean isToggle() {
+        return isToggle;
+    }
+    
+    public boolean isEnabled() {
+        return isEnabled;
     }
 }

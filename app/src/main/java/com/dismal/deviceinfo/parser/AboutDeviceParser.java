@@ -9,6 +9,8 @@ import android.util.Xml;
 import com.dismal.deviceinfo.R;
 import com.dismal.deviceinfo.model.AboutRow;
 
+import com.dismal.deviceinfo.probe.DeviceProbe;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -47,10 +49,15 @@ public final class AboutDeviceParser {
                     String title = sa.getString(R.styleable.AboutPreference_android_title);
                     String summary = sa.getString(R.styleable.AboutPreference_android_summary);
                     boolean dynamic = sa.getBoolean(R.styleable.AboutPreference_dynamic, false);
-                    boolean isCheckbox = sa.getBoolean(R.styleable.AboutPreference_isCheckbox, false);
+                    boolean isToggle = sa.getBoolean(R.styleable.AboutPreference_isToggle, false);
                     sa.recycle();
+                    
+                    boolean isEnabled = true;
+                    if ("use_root".equals(key)) {
+                        isEnabled = DeviceProbe.hasRootAccess();
+                    }
 
-                    rows.add(new AboutRow(key, title, summary, dynamic, isCheckbox));
+                    rows.add(new AboutRow(key, title, summary, dynamic, isToggle, isEnabled));
                 }
             }
         } catch (XmlPullParserException | IOException e) {

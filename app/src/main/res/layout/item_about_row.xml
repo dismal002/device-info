@@ -48,8 +48,8 @@
 
         </LinearLayout>
         
-        <CheckBox
-            android:id="@+id/row_checkbox"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/row_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"

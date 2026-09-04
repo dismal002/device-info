@@ -57,16 +57,22 @@ public class AboutAdapter extends RecyclerView.Adapter<AboutAdapter.RowViewHolde
             holder.summary.setText(summary);
         }
         
-        if (row.isCheckbox()) {
-            holder.checkbox.setVisibility(View.VISIBLE);
+        if (row.isToggle()) {
+            holder.toggle.setVisibility(View.VISIBLE);
+            holder.toggle.setEnabled(row.isEnabled());
             // Optionally, you might want to handle state here if it was saved
         } else {
-            holder.checkbox.setVisibility(View.GONE);
+            holder.toggle.setVisibility(View.GONE);
         }
 
+        holder.itemView.setEnabled(row.isEnabled());
+        holder.title.setEnabled(row.isEnabled());
+        holder.summary.setEnabled(row.isEnabled());
+
         holder.itemView.setOnClickListener(v -> {
-            if (row.isCheckbox()) {
-                holder.checkbox.setChecked(!holder.checkbox.isChecked());
+            if (!row.isEnabled()) return;
+            if (row.isToggle()) {
+                holder.toggle.setChecked(!holder.toggle.isChecked());
             }
             if (listener != null) {
                 listener.onRowClick(row);
@@ -82,13 +88,13 @@ public class AboutAdapter extends RecyclerView.Adapter<AboutAdapter.RowViewHolde
     static class RowViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView summary;
-        final android.widget.CheckBox checkbox;
+        final androidx.appcompat.widget.SwitchCompat toggle;
 
         RowViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.row_title);
             summary = itemView.findViewById(R.id.row_summary);
-            checkbox = itemView.findViewById(R.id.row_checkbox);
+            toggle = itemView.findViewById(R.id.row_toggle);
         }
     }
 }

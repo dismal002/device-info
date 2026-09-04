@@ -13,14 +13,14 @@
          one legacy tile that still just opens a screen (About phone). -->
     <attr name="specSection" format="string" />
 
-    <attr name="isCheckbox" format="boolean" />
+    <attr name="isToggle" format="boolean" />
 
     <declare-styleable name="AboutPreference">
         <attr name="android:key" />
         <attr name="android:title" />
         <attr name="android:summary" />
         <attr name="dynamic" />
-        <attr name="isCheckbox" />
+        <attr name="isToggle" />
     </declare-styleable>
 
     <declare-styleable name="SpecCategory">

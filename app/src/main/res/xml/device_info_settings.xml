@@ -20,7 +20,7 @@
     <about-preference
         android:key="use_root"
         android:title="@string/use_root_title"
-        app:isCheckbox="true" />
+        app:isToggle="true" />
 
     <about-preference
         android:key="open_source_licenses"
